@@ -34,7 +34,7 @@ describe("/api/topics", () => {
 });
 
 describe("/api/articles", () => {
-  describe("GET /:article_id", () => {
+  describe("GET api/articles/:article_id", () => {
     it("200: it responds with an article object all article properties and author", () => {
       return request(app)
         .get("/api/articles/1")
