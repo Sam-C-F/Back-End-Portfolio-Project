@@ -71,14 +71,14 @@ describe("/api/articles", () => {
     });
   });
   describe("PATCH /api/articles/:article_id", () => {
-    it("201: updates votes by number indicated in recieved object", () => {
+    it("200: updates votes by number indicated in recieved object", () => {
       const testVotes = { inc_votes: -50 };
       return request(app)
         .patch("/api/articles/1")
         .send(testVotes)
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles).toEqual({
+          expect(body.article).toEqual({
             article_id: 1,
             title: "Living in the shadow of a great man",
             topic: "mitch",
