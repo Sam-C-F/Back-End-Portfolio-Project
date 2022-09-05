@@ -1,5 +1,9 @@
 const express = require("express");
-const { getTopics, getArticles } = require("./controllers/nc-news.controllers");
+const {
+  getTopics,
+  getArticles,
+  getUsers,
+} = require("./controllers/nc-news.controllers");
 
 const app = express();
 app.use(express.json());
@@ -7,6 +11,8 @@ app.use(express.json());
 app.get("/api/topics", getTopics);
 
 app.get("/api/articles/:article_id", getArticles);
+
+app.get("/api/users", getUsers);
 
 app.use((err, req, res, next) => {
   const badRequestErrors = ["22P02"];
