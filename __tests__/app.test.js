@@ -70,6 +70,30 @@ describe("/api/articles", () => {
         });
     });
   });
+  describe("PATCH /api/articles/:article_id", () => {
+    it("201: updates votes by number indicated in recieved object", () => {
+      const testVotes = { inc_votes: -50 };
+      return request(app)
+        .patch("/api/articles/1")
+        .send(testVotes)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toEqual({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 50,
+          });
+        });
+    });
+    it.todo("400: wrong key entered");
+    it.todo("400: wrong data type for votes");
+    it.todo("404: article_id not found");
+    it.todo("wrong data type for article_id");
+  });
 });
 
 describe("/api/users", () => {

@@ -42,3 +42,29 @@ exports.fetchUsers = () => {
       return rows;
     });
 };
+
+exports.updateArticles = (articleId, newVotes) => {
+  return db
+    .query(
+      `
+    SELECT votes FROM articles
+    WHERE article_id = $1;
+    `,
+      [articleId]
+    )
+    .then(({ rows }) => {
+      const votes = rows[0].votes + newVotes;
+      return db.query(
+        `
+      UPDATE articles
+      SET votes = $1
+      WHERE article_id = $2
+      RETURNING *
+      `,
+        [votes, articleId]
+      );
+    })
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
