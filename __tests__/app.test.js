@@ -89,10 +89,46 @@ describe("/api/articles", () => {
           });
         });
     });
-    it.todo("400: wrong key entered");
-    it.todo("400: wrong data type for votes");
-    it.todo("404: article_id not found");
-    it.todo("wrong data type for article_id");
+    it("400: wrong key entered", () => {
+      const testVotes = { wrong_key: -50 };
+      return request(app)
+        .patch("/api/articles/1")
+        .send(testVotes)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    it("400: wrong data type for votes", () => {
+      const testVotes = { inc_votes: "fifty" };
+      return request(app)
+        .patch("/api/articles/1")
+        .send(testVotes)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    it("404: article_id not found", () => {
+      const testVotes = { inc_votes: 50 };
+      return request(app)
+        .patch("/api/articles/20")
+        .send(testVotes)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("not found");
+        });
+    });
+    it.only("wrong data type for article_id", () => {
+      const testVotes = { inc_votes: 50 };
+      return request(app)
+        .patch("/api/articles/ten")
+        .send(testVotes)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
   });
 });
 

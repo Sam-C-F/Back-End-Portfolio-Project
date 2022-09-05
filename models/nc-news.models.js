@@ -53,6 +53,9 @@ exports.updateArticles = (articleId, newVotes) => {
       [articleId]
     )
     .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "not found" });
+      }
       const votes = rows[0].votes + newVotes;
       return db.query(
         `
