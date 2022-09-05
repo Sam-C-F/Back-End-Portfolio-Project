@@ -119,7 +119,7 @@ describe("/api/articles", () => {
           expect(body.msg).toBe("not found");
         });
     });
-    it.only("wrong data type for article_id", () => {
+    it("wrong data type for article_id", () => {
       const testVotes = { inc_votes: 50 };
       return request(app)
         .patch("/api/articles/ten")
