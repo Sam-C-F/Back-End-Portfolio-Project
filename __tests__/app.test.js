@@ -70,6 +70,66 @@ describe("/api/articles", () => {
         });
     });
   });
+  describe("PATCH /api/articles/:article_id", () => {
+    it("200: updates votes by number indicated in recieved object", () => {
+      const testVotes = { inc_votes: -50 };
+      return request(app)
+        .patch("/api/articles/1")
+        .send(testVotes)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.article).toEqual({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 50,
+          });
+        });
+    });
+    it("400: wrong key entered", () => {
+      const testVotes = { wrong_key: -50 };
+      return request(app)
+        .patch("/api/articles/1")
+        .send(testVotes)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    it("400: wrong data type for votes", () => {
+      const testVotes = { inc_votes: "fifty" };
+      return request(app)
+        .patch("/api/articles/1")
+        .send(testVotes)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    it("404: article_id not found", () => {
+      const testVotes = { inc_votes: 50 };
+      return request(app)
+        .patch("/api/articles/20")
+        .send(testVotes)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("not found");
+        });
+    });
+    it("wrong data type for article_id", () => {
+      const testVotes = { inc_votes: 50 };
+      return request(app)
+        .patch("/api/articles/ten")
+        .send(testVotes)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+  });
 });
 
 describe("/api/users", () => {
