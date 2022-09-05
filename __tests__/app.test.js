@@ -69,6 +69,44 @@ describe("/api/articles", () => {
           expect(body.msg).toBe("bad request");
         });
     });
+    it("200: also includes total count of all comments with this article_id (test 1)", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toEqual(
+            expect.objectContaining({
+              article_id: 1,
+              title: "Living in the shadow of a great man",
+              topic: "mitch",
+              author: "jonny",
+              body: "I find this existence challenging",
+              created_at: "2020-07-09T20:11:00.000Z",
+              votes: 100,
+              comment_count: 11,
+            })
+          );
+        });
+    });
+    it("200: also includes total count of all comments with this article_id (test 2)", () => {
+      return request(app)
+        .get("/api/articles/5")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toEqual(
+            expect.objectContaining({
+              article_id: 5,
+              title: "UNCOVERED: catspiracy to bring down democracy",
+              topic: "cats",
+              author: "paul",
+              body: "Bastet walks amongst us, and the cats are taking arms!",
+              created_at: "2020-08-03T13:14:00.000Z",
+              votes: 0,
+              comment_count: 2,
+            })
+          );
+        });
+    });
   });
   describe("PATCH /api/articles/:article_id", () => {
     it("200: updates votes by number indicated in recieved object", () => {

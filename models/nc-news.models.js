@@ -16,9 +16,12 @@ exports.fetchArticles = (articleId) => {
   return db
     .query(
       `
-    SELECT articles.article_id, title, users.name AS author, body, topic, created_at, votes FROM articles
+    SELECT articles.article_id, articles.title, users.name AS author, articles.body, articles.topic, articles.created_at, articles.votes, COUNT(comments.article_id)::int AS comment_count
+    FROM articles
     JOIN users ON articles.author = users.username
-    WHERE article_id = $1;
+    JOIN comments ON comments.article_id = articles.article_id
+    WHERE articles.article_id = $1
+    GROUP BY articles.article_id, users.name;
     `,
       [articleId]
     )
