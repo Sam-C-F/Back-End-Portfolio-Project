@@ -40,7 +40,7 @@ describe("/api/users", () => {
         .get("/api/users")
         .expect(200)
         .then(({ body }) => {
-          expect(body.users.length > 0).toBe(true);
+          expect(body.users.length === 4).toBe(true);
           body.users.forEach((user) => {
             expect(user).toEqual(
               expect.objectContaining({
