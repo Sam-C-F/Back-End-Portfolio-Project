@@ -1,10 +1,21 @@
 const express = require("express");
-const { getTopics } = require("./controllers/nc-news.controllers");
+const { getTopics, getArticles } = require("./controllers/nc-news.controllers");
 
 const app = express();
 app.use(express.json());
 
 app.get("/api/topics", getTopics);
+
+app.get("/api/articles/:article_id", getArticles);
+
+app.use((err, req, res, next) => {
+  const badRequestErrors = ["22P02"];
+  if (badRequestErrors.includes(err.code)) {
+    res.status(400).send({ msg: "bad request" });
+  } else {
+    next(err);
+  }
+});
 
 app.use((err, req, res, next) => {
   if (err.status && err.msg) {
