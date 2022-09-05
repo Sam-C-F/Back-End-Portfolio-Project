@@ -34,7 +34,7 @@ describe("/api/topics", () => {
 });
 
 describe("/api/articles", () => {
-  describe("GET", () => {
+  describe("GET /:article_id", () => {
     it("200: it responds with an article object all article properties and author", () => {
       return request(app)
         .get("/api/articles/1")
@@ -42,6 +42,7 @@ describe("/api/articles", () => {
         .then(({ body }) => {
           expect(body.articles).toEqual(
             expect.objectContaining({
+              article_id: 1,
               title: "Living in the shadow of a great man",
               topic: "mitch",
               author: "jonny",
@@ -52,12 +53,20 @@ describe("/api/articles", () => {
           );
         });
     });
-    it("400: id number does not exist", () => {
+    it("404: id number not found", () => {
       return request(app)
         .get("/api/articles/20")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("does not exist");
+          expect(body.msg).toBe("not found");
+        });
+    });
+    it("400: wrong data type in request", () => {
+      return request(app)
+        .get("/api/articles/one")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
         });
     });
   });

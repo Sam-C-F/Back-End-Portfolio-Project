@@ -24,7 +24,7 @@ exports.fetchArticles = (articleId) => {
     )
     .then(({ rows }) => {
       if (rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "does not exist" });
+        return Promise.reject({ status: 404, msg: "not found" });
       } else {
         return rows[0];
       }
