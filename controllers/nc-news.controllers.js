@@ -4,6 +4,7 @@ const {
   fetchArticles,
   fetchUsers,
   updateArticles,
+  fetchCommentsOnArticle,
 } = require("../models/nc-news.models");
 
 exports.getTopics = (req, res, next) => {
@@ -38,6 +39,15 @@ exports.patchArticles = (req, res, next) => {
   updateArticles(articleId, newVotes)
     .then((article) => {
       res.status(200).send({ article });
+    })
+    .catch(next);
+};
+
+exports.getCommentsOnArticle = (req, res, next) => {
+  const articleId = req.params.article_id;
+  fetchCommentsOnArticle(articleId)
+    .then((comments) => {
+      res.status(200).send({ comments });
     })
     .catch(next);
 };

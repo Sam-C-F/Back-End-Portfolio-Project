@@ -110,3 +110,38 @@ exports.updateArticles = (articleId, newVotes) => {
       return rows[0];
     });
 };
+
+exports.fetchCommentsOnArticle = (articleId) => {
+  if (articleId.match(/\D/g)) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+  return db
+    .query(
+      `
+  SELECT * FROM articles
+  `
+    )
+    .then(({ rows }) => {
+      const activeArticleIds = rows.map((row) => {
+        return row.article_id;
+      });
+      if (!activeArticleIds.includes(+articleId)) {
+        return Promise.reject({
+          status: 404,
+          msg: `article id ${articleId} not found`,
+        });
+      }
+    })
+    .then(() => {
+      return db.query(
+        `
+  SELECT * FROM comments 
+  WHERE article_id = $1;
+  `,
+        [articleId]
+      );
+    })
+    .then(({ rows }) => {
+      return rows;
+    });
+};

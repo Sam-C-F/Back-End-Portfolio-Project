@@ -4,6 +4,7 @@ const {
   getArticles,
   getUsers,
   patchArticles,
+  getCommentsOnArticle,
 } = require("./controllers/nc-news.controllers");
 
 const app = express();
@@ -14,6 +15,7 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticles);
 app.patch("/api/articles/:article_id", patchArticles);
+app.get("/api/articles/:article_id/comments", getCommentsOnArticle);
 
 app.get("/api/users", getUsers);
 
