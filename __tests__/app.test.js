@@ -34,6 +34,60 @@ describe("/api/topics", () => {
 });
 
 describe("/api/articles", () => {
+  describe("GET", () => {
+    it("200: responds with an array of all articles properties including the correct author and comment_count", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles.length).toBe(12);
+          body.articles.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                comment_count: expect.any(Number),
+              })
+            );
+          });
+        });
+    });
+    it("200: should be sorted by date in Ascending order", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          for (let i = 0; i < body.articles.length - 1; i++) {
+            expect(
+              body.articles[i].created_at > body.articles[i + 1].created_at
+            ).toBe(true);
+          }
+        });
+    });
+    it("200: responds with specified topic when query is input", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles.length === 11).toBe(true);
+          body.articles.forEach((article) => {
+            expect(article.topic).toBe("mitch");
+          });
+        });
+    });
+    it("404: topic not found in article data", () => {
+      return request(app)
+        .get("/api/articles?topic=not_mentioned")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("not found");
+        });
+    });
+  });
   describe("GET api/articles/:article_id", () => {
     it("200: it responds with an article object all article properties and author", () => {
       return request(app)
@@ -103,6 +157,25 @@ describe("/api/articles", () => {
               created_at: "2020-08-03T13:14:00.000Z",
               votes: 0,
               comment_count: 2,
+            })
+          );
+        });
+    });
+    it("200: also includes total count of comments when this is 0", () => {
+      return request(app)
+        .get("/api/articles/4")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toEqual(
+            expect.objectContaining({
+              article_id: 4,
+              title: "Student SUES Mitch!",
+              topic: "mitch",
+              author: "paul",
+              body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
+              created_at: "2020-05-06T01:14:00.000Z",
+              votes: 0,
+              comment_count: 0,
             })
           );
         });
