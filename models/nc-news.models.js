@@ -13,42 +13,62 @@ exports.fetchTopics = () => {
 };
 
 exports.fetchArticles = (articleId, topicQuery) => {
-  let queryStr = `
-  SELECT articles.article_id, articles.title, users.name AS author,`;
+  return db
+    .query(`SELECT * FROM topics`)
+    .then(({ rows }) => {
+      if (topicQuery) {
+        const activeTopics = [];
+        rows.forEach((row) => {
+          activeTopics.push(row.slug);
+        });
+        if (!activeTopics.includes(topicQuery)) {
+          return Promise.reject({
+            status: 404,
+            msg: `${topicQuery} not found`,
+          });
+        }
+      }
+    })
+    .then(() => {
+      let queryStr = `
+      SELECT articles.article_id, articles.title, articles.author,`;
 
-  if (articleId) {
-    queryStr += `articles.body,`;
-  }
+      if (articleId) {
+        queryStr += `articles.body,`;
+      }
 
-  queryStr += ` articles.topic, articles.created_at, articles.votes, COUNT(comments.article_id)::INT AS comment_count
-  FROM articles
-  JOIN users ON articles.author = users.username
-  LEFT JOIN comments ON comments.article_id = articles.article_id`;
+      queryStr += ` articles.topic, articles.created_at, articles.votes, COUNT(comments.article_id)::INT AS comment_count
+      FROM articles
+      LEFT JOIN comments ON comments.article_id = articles.article_id`;
 
-  const queryValues = [];
+      const queryValues = [];
 
-  if (articleId) {
-    queryStr += ` WHERE articles.article_id = $1`;
-    queryValues.push(articleId);
-  }
+      if (articleId) {
+        queryStr += ` WHERE articles.article_id = $1`;
+        queryValues.push(articleId);
+      }
 
-  if (topicQuery) {
-    queryStr += ` WHERE articles.topic = $1`;
-    queryValues.push(topicQuery);
-  }
+      if (topicQuery) {
+        queryStr += ` WHERE articles.topic = $1`;
+        queryValues.push(topicQuery);
+      }
 
-  queryStr += ` GROUP BY articles.article_id, users.name 
-  ORDER BY created_at DESC;`;
+      queryStr += ` GROUP BY articles.article_id 
+      ORDER BY created_at DESC;`;
 
-  return db.query(queryStr, queryValues).then(({ rows }) => {
-    if (rows.length === 0) {
-      return Promise.reject({ status: 404, msg: "not found" });
-    } else if (rows.length === 1) {
-      return rows[0];
-    } else {
-      return rows;
-    }
-  });
+      return db.query(queryStr, queryValues);
+    })
+    .then(({ rows }) => {
+      if (rows.length === 0 && !topicQuery) {
+        return Promise.reject({ status: 404, msg: "not found" });
+      } else if (rows.length === 0 && topicQuery) {
+        return rows;
+      } else if (rows.length === 1) {
+        return rows[0];
+      } else {
+        return rows;
+      }
+    });
 };
 
 exports.fetchUsers = () => {

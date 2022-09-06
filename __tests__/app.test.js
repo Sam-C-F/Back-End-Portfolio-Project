@@ -61,11 +61,10 @@ describe("/api/articles", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
-          for (let i = 0; i < body.articles.length - 1; i++) {
-            expect(
-              body.articles[i].created_at > body.articles[i + 1].created_at
-            ).toBe(true);
-          }
+          expect(body.articles).toBeSorted({
+            key: "created_at",
+            descending: true,
+          });
         });
     });
     it("200: responds with specified topic when query is input", () => {
@@ -79,12 +78,20 @@ describe("/api/articles", () => {
           });
         });
     });
-    it("404: topic not found in article data", () => {
+    it("200: topic exists but has no articles", () => {
       return request(app)
-        .get("/api/articles?topic=not_mentioned")
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toEqual([]);
+        });
+    });
+    it("404: topic does not exist in articles", () => {
+      return request(app)
+        .get("/api/articles?topic=coding")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("not found");
+          expect(body.msg).toBe("coding not found");
         });
     });
   });
@@ -99,7 +106,7 @@ describe("/api/articles", () => {
               article_id: 1,
               title: "Living in the shadow of a great man",
               topic: "mitch",
-              author: "jonny",
+              author: "butter_bridge",
               body: "I find this existence challenging",
               created_at: "2020-07-09T20:11:00.000Z",
               votes: 100,
@@ -133,7 +140,7 @@ describe("/api/articles", () => {
               article_id: 1,
               title: "Living in the shadow of a great man",
               topic: "mitch",
-              author: "jonny",
+              author: "butter_bridge",
               body: "I find this existence challenging",
               created_at: "2020-07-09T20:11:00.000Z",
               votes: 100,
@@ -152,7 +159,7 @@ describe("/api/articles", () => {
               article_id: 5,
               title: "UNCOVERED: catspiracy to bring down democracy",
               topic: "cats",
-              author: "paul",
+              author: "rogersop",
               body: "Bastet walks amongst us, and the cats are taking arms!",
               created_at: "2020-08-03T13:14:00.000Z",
               votes: 0,
@@ -171,7 +178,7 @@ describe("/api/articles", () => {
               article_id: 4,
               title: "Student SUES Mitch!",
               topic: "mitch",
-              author: "paul",
+              author: "rogersop",
               body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
               created_at: "2020-05-06T01:14:00.000Z",
               votes: 0,
