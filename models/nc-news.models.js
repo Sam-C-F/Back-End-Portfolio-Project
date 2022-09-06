@@ -17,9 +17,8 @@ exports.fetchArticles = (articleId, topicQuery) => {
     .query(`SELECT * FROM topics`)
     .then(({ rows }) => {
       if (topicQuery) {
-        const activeTopics = [];
-        rows.forEach((row) => {
-          activeTopics.push(row.slug);
+        const activeTopics = rows.map((row) => {
+          return row.slug;
         });
         if (!activeTopics.includes(topicQuery)) {
           return Promise.reject({
