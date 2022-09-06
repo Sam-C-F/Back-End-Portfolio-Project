@@ -14,7 +14,13 @@ exports.fetchTopics = () => {
 
 exports.fetchArticles = (articleId, topicQuery) => {
   let queryStr = `
-  SELECT articles.article_id, articles.title, users.name AS author, articles.body, articles.topic, articles.created_at, articles.votes, COUNT(comments.article_id)::INT AS comment_count
+  SELECT articles.article_id, articles.title, users.name AS author,`;
+
+  if (articleId) {
+    queryStr += `articles.body,`;
+  }
+
+  queryStr += ` articles.topic, articles.created_at, articles.votes, COUNT(comments.article_id)::INT AS comment_count
   FROM articles
   JOIN users ON articles.author = users.username
   LEFT JOIN comments ON comments.article_id = articles.article_id`;
@@ -35,7 +41,6 @@ exports.fetchArticles = (articleId, topicQuery) => {
   ORDER BY created_at DESC;`;
 
   return db.query(queryStr, queryValues).then(({ rows }) => {
-    console.log(rows);
     if (rows.length === 0) {
       return Promise.reject({ status: 404, msg: "not found" });
     } else if (rows.length === 1) {
