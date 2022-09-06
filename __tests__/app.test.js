@@ -286,6 +286,14 @@ describe("/api/articles", () => {
         });
     });
   });
+  it("400: returns an error when invalid article_id is given", () => {
+    return request(app)
+      .get("/api/articles/one/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("bad request");
+      });
+  });
 });
 
 describe("/api/users", () => {

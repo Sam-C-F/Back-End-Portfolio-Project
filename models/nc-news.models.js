@@ -112,6 +112,9 @@ exports.updateArticles = (articleId, newVotes) => {
 };
 
 exports.fetchCommentsOnArticle = (articleId) => {
+  if (articleId.match(/\D/g)) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
   return db
     .query(
       `
@@ -130,16 +133,15 @@ exports.fetchCommentsOnArticle = (articleId) => {
       }
     })
     .then(() => {
-      return db
-        .query(
-          `
+      return db.query(
+        `
   SELECT * FROM comments 
   WHERE article_id = $1;
   `,
-          [articleId]
-        )
-        .then(({ rows }) => {
-          return rows;
-        });
+        [articleId]
+      );
+    })
+    .then(({ rows }) => {
+      return rows;
     });
 };
