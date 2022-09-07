@@ -1,5 +1,4 @@
 const db = require("../db/connection");
-const { convertTimestampToDate } = require("../db/seeds/utils");
 
 exports.fetchTopics = () => {
   return db
@@ -113,7 +112,7 @@ exports.updateArticles = (articleId, newVotes) => {
 };
 
 exports.fetchCommentsOnArticle = (articleId) => {
-  if (articleId.match(/\D/g)) {
+  if (articleId.match(/\D/g) || articleId < 1) {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
   return db
