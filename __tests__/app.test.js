@@ -95,6 +95,73 @@ describe("/api/articles", () => {
         });
     });
   });
+  describe("GET /api/articles sort_by(queries)", () => {
+    it("200: returns all articles sorted by valid column defaults to descending", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSorted({
+            key: "title",
+            descending: true,
+          });
+        });
+    });
+    it("200: returns all articles sorted by valid column and allows order to be changed to ascending", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title&order_by=ASC")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSorted({
+            key: "title",
+            ascending: true,
+          });
+        });
+    });
+    it("200: returns all articles sorted by valid column and allows order to be changed to ascending", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title&order_by=ASC")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSorted({
+            key: "title",
+            ascending: true,
+          });
+        });
+    });
+    it("400: cannot search by invalid column name", () => {
+      return request(app)
+        .get("/api/articles?sort_by=invalid")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    it("400: cannot search by invalid order type", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title&order_by=invalid")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    it("400: sends 400 error if any data added after legitimate queries (error codes added to badRequestErrors in app)", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title&order_by=ASC;DROP TABLE users")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    it("400: query inputs are sanitised to only allow certain queries to be made)", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title&order_by=ASC;DROP TABLE users")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+  });
   describe("GET api/articles/:article_id", () => {
     it("200: it responds with an article object all article properties and author", () => {
       return request(app)
