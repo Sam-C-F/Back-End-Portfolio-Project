@@ -20,7 +20,7 @@ app.get("/api/articles/:article_id/comments", getCommentsOnArticle);
 app.get("/api/users", getUsers);
 
 app.use((err, req, res, next) => {
-  const badRequestErrors = ["22P02"];
+  const badRequestErrors = ["22P02", "42703", "42601", "25001", "2BP01"];
   if (badRequestErrors.includes(err.code)) {
     res.status(400).send({ msg: "bad request" });
   } else {
