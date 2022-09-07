@@ -147,6 +147,9 @@ exports.fetchCommentsOnArticle = (articleId) => {
 };
 
 exports.addCommentsOnArticle = (article_id, username, body) => {
+  if (article_id.match(/\D/g) || article_id < 1) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
   if (body === undefined || username === undefined) {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
@@ -154,16 +157,23 @@ exports.addCommentsOnArticle = (article_id, username, body) => {
     .query(
       `
   SELECT * FROM users
+  JOIN articles ON articles.author = users.username;
   `
     )
     .then(({ rows }) => {
+      const activeArticleIds = rows.map((row) => {
+        return row.article_id;
+      });
       const activeUsernames = rows.map((row) => {
         return row.username;
       });
-      return activeUsernames.includes(username);
+      return {
+        activeUsernames: !activeUsernames.includes(username),
+        activeArticleIds: !activeArticleIds.includes(+article_id),
+      };
     })
-    .then((correctUsername) => {
-      if (!body || !correctUsername) {
+    .then(({ activeUsernames, activeArticleIds }) => {
+      if (!body || activeUsernames || activeArticleIds) {
         return Promise.reject({ status: 404, msg: "not found" });
       }
       const timeStamp = new Date(Date.now());

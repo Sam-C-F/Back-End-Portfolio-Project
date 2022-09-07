@@ -374,9 +374,9 @@ describe("/api/articles", () => {
       return request(app)
         .post("/api/articles/20/comments")
         .send(testComment)
-        .expect(400)
+        .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("bad request");
+          expect(body.msg).toBe("not found");
         });
     });
     it("400: invalid article_id", () => {
