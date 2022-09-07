@@ -95,6 +95,30 @@ describe("/api/articles", () => {
         });
     });
   });
+  describe("GET /api/articles sort_by(queries)", () => {
+    it("200: returns all articles sorted by valid column defaults to descending", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSorted({
+            key: "title",
+            descending: true,
+          });
+        });
+    });
+    it("200: returns all articles sorted by valid column and allows order to be changed to ascending", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title&order_by=ASC")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSorted({
+            key: "title",
+            ascending: true,
+          });
+        });
+    });
+  });
   describe("GET api/articles/:article_id", () => {
     it("200: it responds with an article object all article properties and author", () => {
       return request(app)

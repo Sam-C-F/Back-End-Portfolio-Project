@@ -12,7 +12,12 @@ exports.fetchTopics = () => {
     });
 };
 
-exports.fetchArticles = (articleId, topicQuery) => {
+exports.fetchArticles = (
+  articleId,
+  topicQuery,
+  sortBy = "created_at",
+  orderBy = "DESC"
+) => {
   return db
     .query(`SELECT * FROM topics`)
     .then(({ rows }) => {
@@ -53,7 +58,7 @@ exports.fetchArticles = (articleId, topicQuery) => {
       }
 
       queryStr += ` GROUP BY articles.article_id 
-      ORDER BY created_at DESC;`;
+      ORDER BY ${sortBy} ${orderBy};`;
 
       return db.query(queryStr, queryValues);
     })
