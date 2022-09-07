@@ -147,21 +147,37 @@ exports.fetchCommentsOnArticle = (articleId) => {
 };
 
 exports.addCommentsOnArticle = (article_id, username, body) => {
-  const timeStamp = new Date(Date.now());
-  if (!body) {
+  if (body === undefined || username === undefined) {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
   return db
     .query(
       `
+  SELECT * FROM users
+  `
+    )
+    .then(({ rows }) => {
+      const activeUsernames = rows.map((row) => {
+        return row.username;
+      });
+      return activeUsernames.includes(username);
+    })
+    .then((correctUsername) => {
+      if (!body || !correctUsername) {
+        return Promise.reject({ status: 404, msg: "not found" });
+      }
+      const timeStamp = new Date(Date.now());
+      return db.query(
+        `
   INSERT INTO comments
   (votes, body, author, article_id, created_at)
   VALUES
   ('0', $1, $2, $3, $4)
   RETURNING *;
   `,
-      [body, username, article_id, timeStamp]
-    )
+        [body, username, article_id, timeStamp]
+      );
+    })
     .then(({ rows }) => {
       return rows[0];
     });

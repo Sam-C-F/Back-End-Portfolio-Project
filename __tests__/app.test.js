@@ -323,9 +323,9 @@ describe("/api/articles", () => {
       return request(app)
         .post("/api/articles/1/comments")
         .send(testComment)
-        .expect(400)
+        .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("bad request");
+          expect(body.msg).toBe("not found");
         });
     });
     it("400: empty data field", () => {
@@ -335,6 +335,31 @@ describe("/api/articles", () => {
       };
       return request(app)
         .post("/api/articles/1/comments")
+        .send(testComment)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("not found");
+        });
+    });
+    it("404: username not found", () => {
+      const testComment = {
+        username: "wrong_username",
+        body: "test body",
+      };
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(testComment)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("not found");
+        });
+    });
+    it("400: missing required field/key", () => {
+      const testComment = {
+        body: "test body",
+      };
+      return request(app)
+        .post("/api/articles/20/comments")
         .send(testComment)
         .expect(400)
         .then(({ body }) => {
@@ -348,6 +373,19 @@ describe("/api/articles", () => {
       };
       return request(app)
         .post("/api/articles/20/comments")
+        .send(testComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    it("400: invalid article_id", () => {
+      const testComment = {
+        username: "butter_bridge",
+        body: "test body",
+      };
+      return request(app)
+        .post("/api/articles/invalid/comments")
         .send(testComment)
         .expect(400)
         .then(({ body }) => {
