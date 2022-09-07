@@ -212,3 +212,25 @@ exports.addCommentsOnArticle = (article_id, username, body) => {
       return rows[0];
     });
 };
+
+exports.removeCommentById = (commentId) => {
+  return db
+    .query(`SELECT * FROM comments`)
+    .then(({ rows }) => {
+      const allActiveComments = rows.map((row) => {
+        return row.comment_id;
+      });
+      if (!allActiveComments.includes(+commentId)) {
+        return Promise.reject({ status: 400, msg: "bad request" });
+      }
+    })
+    .then(() => {
+      return db.query(
+        `
+  DELETE FROM comments
+  WHERE comment_id = $1;
+  `,
+        [commentId]
+      );
+    });
+};
