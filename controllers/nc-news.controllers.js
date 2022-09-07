@@ -18,8 +18,14 @@ exports.getTopics = (req, res, next) => {
 exports.getArticles = (req, res, next) => {
   const topicQuery = req.query.topic;
   const articleId = req.params.article_id;
-  const sortBy = req.query.sort_by;
-  const orderBy = req.query.order_by;
+  let sortBy = req.query.sort_by;
+  if (sortBy) {
+    sortBy = sortBy.toLowerCase();
+  }
+  let orderBy = req.query.order_by;
+  if (orderBy) {
+    orderBy = orderBy.toUpperCase();
+  }
   fetchArticles(articleId, topicQuery, sortBy, orderBy)
     .then((articles) => {
       res.status(200).send({ articles });

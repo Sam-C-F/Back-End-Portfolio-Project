@@ -153,6 +153,14 @@ describe("/api/articles", () => {
           expect(body.msg).toBe("bad request");
         });
     });
+    it("400: query inputs are sanitised to only allow certain queries to be made)", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title&order_by=ASC;DROP TABLE users")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
   });
   describe("GET api/articles/:article_id", () => {
     it("200: it responds with an article object all article properties and author", () => {

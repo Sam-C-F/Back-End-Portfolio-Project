@@ -18,6 +18,21 @@ exports.fetchArticles = (
   sortBy = "created_at",
   orderBy = "DESC"
 ) => {
+  const validColumns = [
+    "topic",
+    "articles",
+    "votes",
+    "comment_count",
+    "created_at",
+    "title",
+  ];
+  const validOrder = ["ASC", "DESC"];
+  if (!validColumns.includes(sortBy)) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+  if (!validOrder.includes(orderBy)) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
   return db
     .query(`SELECT * FROM topics`)
     .then(({ rows }) => {
