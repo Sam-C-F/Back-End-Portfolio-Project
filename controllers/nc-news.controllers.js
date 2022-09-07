@@ -5,6 +5,7 @@ const {
   fetchUsers,
   updateArticles,
   fetchCommentsOnArticle,
+  addCommentsOnArticle,
 } = require("../models/nc-news.models");
 
 exports.getTopics = (req, res, next) => {
@@ -48,6 +49,16 @@ exports.getCommentsOnArticle = (req, res, next) => {
   fetchCommentsOnArticle(articleId)
     .then((comments) => {
       res.status(200).send({ comments });
+    })
+    .catch(next);
+};
+
+exports.postCommentsOnArticle = (req, res, next) => {
+  const { username, body } = req.body;
+  const articleId = req.params.article_id;
+  addCommentsOnArticle(articleId, username, body)
+    .then((comment) => {
+      res.status(201).send({ comment });
     })
     .catch(next);
 };

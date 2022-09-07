@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { convertTimestampToDate } = require("../db/seeds/utils");
 
 exports.fetchTopics = () => {
   return db
@@ -143,5 +144,26 @@ exports.fetchCommentsOnArticle = (articleId) => {
     })
     .then(({ rows }) => {
       return rows;
+    });
+};
+
+exports.addCommentsOnArticle = (article_id, username, body) => {
+  const timeStamp = new Date(Date.now());
+  if (!body) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+  return db
+    .query(
+      `
+  INSERT INTO comments
+  (votes, body, author, article_id, created_at)
+  VALUES
+  ('0', $1, $2, $3, $4)
+  RETURNING *;
+  `,
+      [body, username, article_id, timeStamp]
+    )
+    .then(({ rows }) => {
+      return rows[0];
     });
 };
