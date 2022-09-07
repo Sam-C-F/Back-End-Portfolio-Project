@@ -132,7 +132,7 @@ exports.updateArticles = (articleId, newVotes) => {
 };
 
 exports.fetchCommentsOnArticle = (articleId) => {
-  if (articleId.match(/\D/g)) {
+  if (articleId.match(/\D/g) || articleId < 1) {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
   return db
@@ -163,5 +163,52 @@ exports.fetchCommentsOnArticle = (articleId) => {
     })
     .then(({ rows }) => {
       return rows;
+    });
+};
+
+exports.addCommentsOnArticle = (article_id, username, body) => {
+  if (article_id.match(/\D/g) || article_id < 1) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+  if (body === undefined || username === undefined) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+  return db
+    .query(
+      `
+  SELECT * FROM users
+  JOIN articles ON articles.author = users.username;
+  `
+    )
+    .then(({ rows }) => {
+      const activeArticleIds = rows.map((row) => {
+        return row.article_id;
+      });
+      const activeUsernames = rows.map((row) => {
+        return row.username;
+      });
+      return {
+        activeUsernames: !activeUsernames.includes(username),
+        activeArticleIds: !activeArticleIds.includes(+article_id),
+      };
+    })
+    .then(({ activeUsernames, activeArticleIds }) => {
+      if (!body || activeUsernames || activeArticleIds) {
+        return Promise.reject({ status: 404, msg: "not found" });
+      }
+      const timeStamp = new Date(Date.now());
+      return db.query(
+        `
+  INSERT INTO comments
+  (votes, body, author, article_id, created_at)
+  VALUES
+  ('0', $1, $2, $3, $4)
+  RETURNING *;
+  `,
+        [body, username, article_id, timeStamp]
+      );
+    })
+    .then(({ rows }) => {
+      return rows[0];
     });
 };
