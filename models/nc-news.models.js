@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const endpoints = require("../endpoints.json");
 
 exports.fetchTopics = () => {
   return db
@@ -213,6 +214,7 @@ exports.addCommentsOnArticle = (article_id, username, body) => {
     });
 };
 
+
 exports.removeCommentById = (commentId) => {
   if (commentId.match(/\D/g) || commentId < 1) {
     return Promise.reject({ status: 400, msg: "bad request" });
@@ -233,4 +235,8 @@ exports.removeCommentById = (commentId) => {
         [commentId]
       );
     });
+};
+
+exports.fetchApi = () => {
+  return endpoints;
 };

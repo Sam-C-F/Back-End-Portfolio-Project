@@ -5,6 +5,7 @@ const {
   updateArticles,
   fetchCommentsOnArticle,
   addCommentsOnArticle,
+  fetchApi,
   removeCommentById,
 } = require("../models/nc-news.models");
 
@@ -71,10 +72,16 @@ exports.postCommentsOnArticle = (req, res, next) => {
     .catch(next);
 };
 
+
 exports.deleteCommentById = (req, res, next) => {
   removeCommentById(req.params.comment_id)
     .then(() => {
       res.status(204).send();
     })
     .catch(next);
+};
+
+exports.getApi = (req, res, next) => {
+  const endpoints = fetchApi();
+  res.status(200).send({ endpoints });
 };

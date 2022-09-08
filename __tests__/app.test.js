@@ -484,6 +484,7 @@ describe("/api/users", () => {
   });
 });
 
+
 describe("/api/comments/:comment_id", () => {
   describe("DELETE", () => {
     it("204: deletes the comment with the given id", () => {
@@ -516,6 +517,17 @@ describe("/api/comments/:comment_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("bad request");
+      });
+  });
+});
+
+describe("GET /api", () => {
+  it("returns the endpoints.json file", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        expect(typeof body.endpoints).toBe("object");
       });
   });
 });
