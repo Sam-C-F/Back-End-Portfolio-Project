@@ -9,75 +9,87 @@ const {
   removeCommentById,
 } = require("../models/nc-news.models");
 
-exports.getTopics = (req, res, next) => {
-  fetchTopics()
-    .then((topics) => {
-      res.status(200).send({ topics });
-    })
-    .catch(next);
-};
-
-exports.getArticles = (req, res, next) => {
-  const topicQuery = req.query.topic;
-  const articleId = req.params.article_id;
-  let sortBy = req.query.sort_by;
-  if (sortBy) {
-    sortBy = sortBy.toLowerCase();
+exports.getTopics = async (req, res, next) => {
+  try {
+    const topics = await fetchTopics();
+    res.status(200).send({ topics });
+  } catch (err) {
+    next(err);
   }
-  let orderBy = req.query.order_by;
-  if (orderBy) {
-    orderBy = orderBy.toUpperCase();
+};
+
+exports.getArticles = async (req, res, next) => {
+  try {
+    const topicQuery = req.query.topic;
+    const articleId = req.params.article_id;
+    let sortBy = req.query.sort_by;
+    if (sortBy) {
+      sortBy = sortBy.toLowerCase();
+    }
+    let orderBy = req.query.order_by;
+    if (orderBy) {
+      orderBy = orderBy.toUpperCase();
+    }
+    const articles = await fetchArticles(
+      articleId,
+      topicQuery,
+      sortBy,
+      orderBy
+    );
+    res.status(200).send({ articles });
+  } catch (err) {
+    next(err);
   }
-  fetchArticles(articleId, topicQuery, sortBy, orderBy)
-    .then((articles) => {
-      res.status(200).send({ articles });
-    })
-    .catch(next);
 };
 
-exports.getUsers = (req, res, next) => {
-  fetchUsers()
-    .then((users) => {
-      res.status(200).send({ users });
-    })
-    .catch(next);
+exports.getUsers = async (req, res, next) => {
+  try {
+    const users = await fetchUsers();
+    res.status(200).send({ users });
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.patchArticles = (req, res, next) => {
-  const newVotes = req.body.inc_votes;
-  const articleId = req.params.article_id;
-  updateArticles(articleId, newVotes)
-    .then((article) => {
-      res.status(200).send({ article });
-    })
-    .catch(next);
+exports.patchArticles = async (req, res, next) => {
+  try {
+    const newVotes = req.body.inc_votes;
+    const articleId = req.params.article_id;
+    const article = await updateArticles(articleId, newVotes);
+    res.status(200).send({ article });
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.getCommentsOnArticle = (req, res, next) => {
-  const articleId = req.params.article_id;
-  fetchCommentsOnArticle(articleId)
-    .then((comments) => {
-      res.status(200).send({ comments });
-    })
-    .catch(next);
+exports.getCommentsOnArticle = async (req, res, next) => {
+  try {
+    const articleId = req.params.article_id;
+    const comments = await fetchCommentsOnArticle(articleId);
+    res.status(200).send({ comments });
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.postCommentsOnArticle = (req, res, next) => {
-  const { username, body } = req.body;
-  const articleId = req.params.article_id;
-  addCommentsOnArticle(articleId, username, body)
-    .then((comment) => {
-      res.status(201).send({ comment });
-    })
-    .catch(next);
+exports.postCommentsOnArticle = async (req, res, next) => {
+  try {
+    const { username, body } = req.body;
+    const articleId = req.params.article_id;
+    const comment = await addCommentsOnArticle(articleId, username, body);
+    res.status(201).send({ comment });
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.deleteCommentById = (req, res, next) => {
-  removeCommentById(req.params.comment_id)
-    .then(() => {
-      res.status(204).send();
-    })
-    .catch(next);
+exports.deleteCommentById = async (req, res, next) => {
+  try {
+    await removeCommentById(req.params.comment_id);
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.getApi = (req, res, next) => {
