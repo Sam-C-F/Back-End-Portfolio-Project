@@ -491,20 +491,22 @@ describe("/api/comments/:comment_id", () => {
         .delete("/api/comments/1")
         .expect(204)
         .then(() => {
-          return db.query(`SELECT * FROM comments`).then(({ rows }) => {
-            const allCommentIds = rows.map((row) => {
-              return row.comment_id;
+          return db
+            .query(`SELECT * FROM comments WHERE comment_id = 1`)
+            .then(({ rows }) => {
+              const allCommentIds = rows.map((row) => {
+                return row.comment_id;
+              });
+              expect(allCommentIds).toEqual([]);
             });
-            expect(allCommentIds).not.toInclude(1);
-          });
         });
     });
-    it("400: comment does not exist", () => {
+    it("404: comment does not exist", () => {
       return request(app)
         .delete("/api/comments/20")
-        .expect(400)
+        .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("bad request");
+          expect(body.msg).toBe("not found");
         });
     });
   });

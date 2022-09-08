@@ -214,6 +214,9 @@ exports.addCommentsOnArticle = (article_id, username, body) => {
 };
 
 exports.removeCommentById = (commentId) => {
+  if (commentId.match(/\D/g) || commentId < 1) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
   return db
     .query(`SELECT * FROM comments`)
     .then(({ rows }) => {
@@ -221,7 +224,7 @@ exports.removeCommentById = (commentId) => {
         return row.comment_id;
       });
       if (!allActiveComments.includes(+commentId)) {
-        return Promise.reject({ status: 400, msg: "bad request" });
+        return Promise.reject({ status: 404, msg: "not found" });
       }
     })
     .then(() => {
