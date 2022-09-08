@@ -218,7 +218,7 @@ exports.removeCommentById = (commentId) => {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
   return db
-    .query(`SELECT * FROM comments`)
+    .query(`SELECT * FROM comments WHERE comment_id = $1`, [commentId])
     .then(({ rows }) => {
       const allActiveComments = rows.map((row) => {
         return row.comment_id;
