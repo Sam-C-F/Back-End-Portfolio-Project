@@ -214,6 +214,29 @@ exports.addCommentsOnArticle = (article_id, username, body) => {
     });
 };
 
+
+exports.removeCommentById = (commentId) => {
+  if (commentId.match(/\D/g) || commentId < 1) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+  return db
+    .query(`SELECT * FROM comments WHERE comment_id = $1`, [commentId])
+    .then(({ rows }) => {
+      if (!rows[0]) {
+        return Promise.reject({ status: 404, msg: "not found" });
+      }
+    })
+    .then(() => {
+      return db.query(
+        `
+  DELETE FROM comments
+  WHERE comment_id = $1;
+  `,
+        [commentId]
+      );
+    });
+};
+
 exports.fetchApi = () => {
   return endpoints;
 };
