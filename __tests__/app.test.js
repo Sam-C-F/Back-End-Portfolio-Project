@@ -464,7 +464,7 @@ describe("/api/articles", () => {
 
 describe("/api/users", () => {
   describe("GET", () => {
-    it("responds with an array of users", () => {
+    it("200: responds with an array of users", () => {
       return request(app)
         .get("/api/users")
         .expect(200)
