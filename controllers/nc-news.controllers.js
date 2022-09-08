@@ -73,6 +73,5 @@ exports.postCommentsOnArticle = (req, res, next) => {
 
 exports.getApi = (req, res, next) => {
   const endpoints = fetchApi();
-  console.log(endpoints);
-  res.status(200).send({ api: endpoints }).catch(next);
+  res.status(200).send({ endpoints });
 };
