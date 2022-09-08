@@ -5,6 +5,7 @@ const {
   updateArticles,
   fetchCommentsOnArticle,
   addCommentsOnArticle,
+  removeCommentById,
 } = require("../models/nc-news.models");
 
 exports.getTopics = (req, res, next) => {
@@ -66,6 +67,14 @@ exports.postCommentsOnArticle = (req, res, next) => {
   addCommentsOnArticle(articleId, username, body)
     .then((comment) => {
       res.status(201).send({ comment });
+    })
+    .catch(next);
+};
+
+exports.deleteCommentById = (req, res, next) => {
+  removeCommentById(req.params.comment_id)
+    .then(() => {
+      res.status(204).send();
     })
     .catch(next);
 };

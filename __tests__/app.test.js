@@ -483,3 +483,39 @@ describe("/api/users", () => {
     });
   });
 });
+
+describe("/api/comments/:comment_id", () => {
+  describe("DELETE", () => {
+    it("204: deletes the comment with the given id", () => {
+      return request(app)
+        .delete("/api/comments/1")
+        .expect(204)
+        .then(() => {
+          return db
+            .query(`SELECT * FROM comments WHERE comment_id = 1`)
+            .then(({ rows }) => {
+              const allCommentIds = rows.map((row) => {
+                return row.comment_id;
+              });
+              expect(allCommentIds).toEqual([]);
+            });
+        });
+    });
+    it("404: comment does not exist", () => {
+      return request(app)
+        .delete("/api/comments/20")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("not found");
+        });
+    });
+  });
+  it("400: article_id is invalid", () => {
+    return request(app)
+      .delete("/api/comments/invalid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});
