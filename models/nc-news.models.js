@@ -220,10 +220,7 @@ exports.removeCommentById = (commentId) => {
   return db
     .query(`SELECT * FROM comments WHERE comment_id = $1`, [commentId])
     .then(({ rows }) => {
-      const allActiveComments = rows.map((row) => {
-        return row.comment_id;
-      });
-      if (!allActiveComments.includes(+commentId)) {
+      if (!rows[0]) {
         return Promise.reject({ status: 404, msg: "not found" });
       }
     })
