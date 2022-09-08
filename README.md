@@ -29,6 +29,8 @@ and include the following in the file:
 
 `PGDATABASE=nc_news_test`
 
+**npm start** can be used to run the server locally.
+
 ## Testing
 
 Tests can be run using either:
