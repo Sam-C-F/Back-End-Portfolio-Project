@@ -484,7 +484,6 @@ describe("/api/users", () => {
   });
 });
 
-
 describe("/api/comments/:comment_id", () => {
   describe("DELETE", () => {
     it("204: deletes the comment with the given id", () => {

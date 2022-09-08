@@ -214,7 +214,6 @@ exports.addCommentsOnArticle = (article_id, username, body) => {
     });
 };
 
-
 exports.removeCommentById = (commentId) => {
   if (commentId.match(/\D/g) || commentId < 1) {
     return Promise.reject({ status: 400, msg: "bad request" });

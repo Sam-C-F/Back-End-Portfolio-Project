@@ -72,7 +72,6 @@ exports.postCommentsOnArticle = (req, res, next) => {
     .catch(next);
 };
 
-
 exports.deleteCommentById = (req, res, next) => {
   removeCommentById(req.params.comment_id)
     .then(() => {
