@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const endpoints = require("../endpoints.json");
 
 exports.fetchTopics = () => {
   return db
@@ -211,4 +212,8 @@ exports.addCommentsOnArticle = (article_id, username, body) => {
     .then(({ rows }) => {
       return rows[0];
     });
+};
+
+exports.fetchApi = () => {
+  return endpoints;
 };

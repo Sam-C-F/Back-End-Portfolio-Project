@@ -5,6 +5,7 @@ const {
   updateArticles,
   fetchCommentsOnArticle,
   addCommentsOnArticle,
+  fetchApi,
 } = require("../models/nc-news.models");
 
 exports.getTopics = (req, res, next) => {
@@ -68,4 +69,10 @@ exports.postCommentsOnArticle = (req, res, next) => {
       res.status(201).send({ comment });
     })
     .catch(next);
+};
+
+exports.getApi = (req, res, next) => {
+  const endpoints = fetchApi();
+  console.log(endpoints);
+  res.status(200).send({ api: endpoints }).catch(next);
 };

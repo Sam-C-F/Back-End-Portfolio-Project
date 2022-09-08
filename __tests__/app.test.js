@@ -483,3 +483,131 @@ describe("/api/users", () => {
     });
   });
 });
+
+describe("GET /api", () => {
+  it("returns the endpoints.json file", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.api).toEqual({
+          "GET /api": {
+            description:
+              "serves up a json representation of all the available endpoints of the api",
+          },
+          "GET /api/topics": {
+            description: "serves an array of all topics",
+            queries: [],
+            exampleResponse: {
+              topics: [{ slug: "football", description: "Footie!" }],
+            },
+          },
+          "GET /api/articles": {
+            description: "serves an array of all topics",
+            queries: ["topic", "sort_by", "order"],
+            exampleResponse: {
+              articles: [
+                {
+                  title: "Seafood substitutions are increasing",
+                  topic: "cooking",
+                  author: "weegembump",
+                  body: "Text from the article..",
+                  created_at: 1527695953341,
+                },
+              ],
+            },
+          },
+          "GET /api/articles/:article_id": {
+            description: "serves a single article",
+            queries: [],
+            exampleResponse: {
+              article: [
+                {
+                  article_id: 1,
+                  title: "Living in the shadow of a great man",
+                  author: "weegembump",
+                  body: "Text from article",
+                  topic: "mitch",
+                  created_at: "2020-07-09T20:11:00.000Z",
+                  votes: 100,
+                  comment_count: 11,
+                },
+              ],
+            },
+          },
+          "PATCH /api/articles/:article_id": {
+            description: "updates changes to the 'vote' value",
+            queries: [{ inc_votes: 10 }],
+            exampleResponse: {
+              article: [
+                {
+                  article_id: 1,
+                  title: "Living in the shadow of a great man",
+                  author: "weegembump",
+                  body: "Text from article",
+                  topic: "mitch",
+                  created_at: "2020-07-09T20:11:00.000Z",
+                  votes: 110,
+                  comment_count: 11,
+                },
+              ],
+            },
+          },
+          "GET /api/articles/:article_id/comments": {
+            description: "serves all comments on given article",
+            queries: [],
+            exampleResponse: {
+              comment: [
+                {
+                  body: "body from article",
+                  votes: 1,
+                  author: "weegembump",
+                  article_id: 6,
+                  created_at: 1602433380000,
+                },
+              ],
+            },
+          },
+          "POST /api/articles/:article_id/comments": {
+            description: "creates a new comment related to an article",
+            queries: [
+              {
+                username: "weegembump",
+                body: "comment on article",
+              },
+            ],
+            exampleResponse: {
+              comment: [
+                {
+                  body: "comment on article",
+                  votes: 10,
+                  author: "weegembump",
+                  article_id: 14,
+                  created_at: 1584205320000,
+                },
+              ],
+            },
+          },
+          "DELETE /api/articles/:article_id/comments": {
+            description: "removes a comment from an article",
+            queries: [],
+            exampleResponse: {},
+          },
+          "GET /api/users": {
+            description: "serves an array of all users",
+            queries: [],
+            exampleResponse: {
+              user: [
+                {
+                  username: "rogersop",
+                  name: "paul",
+                  avatar_url:
+                    "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+                },
+              ],
+            },
+          },
+        });
+      });
+  });
+});
