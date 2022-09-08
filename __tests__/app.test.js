@@ -482,6 +482,37 @@ describe("/api/users", () => {
         });
     });
   });
+  describe("GET api/user/:username", () => {
+    it("200: responds with an object of the user with the passed username", () => {
+      return request(app)
+        .get("/api/users/butter_bridge")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.user).toEqual({
+            username: "butter_bridge",
+            name: "jonny",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+          });
+        });
+    });
+    it("404: username not found", () => {
+      return request(app)
+        .get("/api/users/wrong_username")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("wrong_username not found");
+        });
+    });
+    it("400: wrong data type entered", () => {
+      return request(app)
+        .get("/api/users/1")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("bad request");
+        });
+    });
+  });
 });
 
 describe("/api/comments/:comment_id", () => {

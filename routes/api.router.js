@@ -3,10 +3,9 @@ const {
   getApi,
   getTopics,
   deleteCommentById,
-  getUsers,
-  getUserByUsername,
 } = require("../controllers/nc-news.controllers");
-const articlesRouter = require("./articles.router.js");
+const articlesRouter = require("./articles.router");
+const usersRouter = require("./users.router");
 
 const apiRouter = express.Router();
 
@@ -18,6 +17,6 @@ apiRouter.use("/articles", articlesRouter);
 
 apiRouter.delete("/comments/:comment_id", deleteCommentById);
 
-apiRouter.get("/users", getUsers);
+apiRouter.use("/users", usersRouter);
 
 module.exports = apiRouter;
