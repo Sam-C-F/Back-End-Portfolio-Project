@@ -4,6 +4,7 @@ const {
   getTopics,
   deleteCommentById,
   getUsers,
+  getUserByUsername,
 } = require("../controllers/nc-news.controllers");
 const articlesRouter = require("./articles.router.js");
 

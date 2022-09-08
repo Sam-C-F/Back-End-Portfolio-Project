@@ -7,6 +7,7 @@ const {
   addCommentsOnArticle,
   fetchApi,
   removeCommentById,
+  fetchUserByUsername,
 } = require("../models/nc-news.models");
 
 exports.getTopics = async (req, res, next) => {
