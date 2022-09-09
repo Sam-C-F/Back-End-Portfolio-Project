@@ -3,6 +3,7 @@ const {
   getApi,
   getTopics,
   deleteCommentById,
+  patchCommentsById,
 } = require("../controllers/nc-news.controllers");
 const articlesRouter = require("./articles.router");
 const usersRouter = require("./users.router");
