@@ -17,6 +17,7 @@ apiRouter.get("/topics", getTopics);
 apiRouter.use("/articles", articlesRouter);
 
 apiRouter.delete("/comments/:comment_id", deleteCommentById);
+apiRouter.patch("/comments/:comment_id", patchCommentsById);
 
 apiRouter.use("/users", usersRouter);
 
