@@ -233,3 +233,29 @@ exports.fetchUserByUsername = async (username) => {
     return userData.rows[0];
   }
 };
+
+exports.updateCommentsById = async (commentId, newVotes) => {
+  const checkCommentData = await db.query(
+    `
+      SELECT votes FROM comments
+      WHERE comment_id = $1;
+      `,
+    [commentId]
+  );
+
+  if (checkCommentData.rows.length === 0) {
+    return Promise.reject({ status: 404, msg: "not found" });
+  }
+  const votes = checkCommentData.rows[0].votes + newVotes;
+  const updatecommentData = await db.query(
+    `
+        UPDATE comments
+        SET votes = $1
+        WHERE comment_id = $2
+        RETURNING *
+        `,
+    [votes, commentId]
+  );
+
+  return updatecommentData.rows[0];
+};
