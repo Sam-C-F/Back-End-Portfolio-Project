@@ -26,5 +26,5 @@ exports.textCheck = (textOnlyField) => {
 };
 
 exports.bodyCheck = (textOnlyField) => {
-  return /[^a-zA-Z_\s\,\.]/g.test(textOnlyField);
+  return /[^a-zA-Z_\s\,\.\!\"\;\?\@\£\&]/g.test(textOnlyField);
 };
