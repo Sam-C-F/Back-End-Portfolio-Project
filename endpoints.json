@@ -24,6 +24,30 @@
       ]
     }
   },
+  "POST /api/articles": {
+    "description": "posts a new article",
+    "queries": [],
+    "exampleRequest": [
+      {
+        "author": "butter_bridge",
+        "title": "testing",
+        "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "topic": "paper"
+      }
+    ],
+    "exampleResponse": [
+      {
+        "article_id": 13,
+        "author": "butter_bridge",
+        "title": "testing",
+        "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "topic": "paper",
+        "votes": 0,
+        "comment_count": 0,
+        "created_at": "2020-07-09T20:11:00.000Z"
+      }
+    ]
+  },
   "GET /api/articles/:article_id": {
     "description": "serves a single article",
     "queries": [],

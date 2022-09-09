@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { textCheck, bodyCheck } = require("../db/seeds/utils");
 const endpoints = require("../endpoints.json");
 
 exports.fetchTopics = async () => {
@@ -258,4 +259,39 @@ exports.updateCommentsById = async (commentId, newVotes) => {
   );
 
   return updatecommentData.rows[0];
+};
+
+exports.addArticle = async (author, title, body, topic) => {
+  if (
+    !author ||
+    !title ||
+    !body ||
+    textCheck(author) ||
+    textCheck(title) ||
+    bodyCheck(body)
+  ) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+  const timeStamp = new Date(Date.now());
+  const addNewArticle = await db.query(
+    `
+  INSERT INTO articles
+  (votes, author, title, body, topic, created_at)
+  VALUES
+  (0, $1, $2, $3, $4, $5)
+  RETURNING *
+  `,
+    [author, title, body, topic, timeStamp]
+  );
+  const newArticleId = addNewArticle.rows[0].article_id;
+  const returnNewArticle = await db.query(
+    `
+  SELECT articles.article_id, articles.title, articles.author, articles.body, articles.topic, articles.created_at, articles.votes, COUNT(comments.article_id)::INT AS comment_count FROM articles
+  LEFT JOIN comments ON comments.article_id = articles.article_id
+  WHERE articles.article_id = $1
+  GROUP BY articles.article_id
+  `,
+    [newArticleId]
+  );
+  return returnNewArticle.rows[0];
 };
