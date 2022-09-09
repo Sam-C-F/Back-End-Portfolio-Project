@@ -215,3 +215,21 @@ exports.removeCommentById = async (commentId) => {
 exports.fetchApi = () => {
   return endpoints;
 };
+
+exports.fetchUserByUsername = async (username) => {
+  if (username.match(/[^a-zA-Z_]/g)) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+  const userData = await db.query(
+    `
+  SELECT * FROM users 
+  WHERE username = $1;
+  `,
+    [username]
+  );
+  if (!userData.rows[0]) {
+    return Promise.reject({ status: 404, msg: `${username} not found` });
+  } else {
+    return userData.rows[0];
+  }
+};

@@ -97,3 +97,13 @@ exports.getApi = (req, res, next) => {
   const endpoints = fetchApi();
   res.status(200).send({ endpoints });
 };
+
+exports.getUserByUsername = async (req, res, next) => {
+  try {
+    const username = req.params.username;
+    const user = await fetchUserByUsername(username);
+    res.status(200).send({ user });
+  } catch (err) {
+    next(err);
+  }
+};
