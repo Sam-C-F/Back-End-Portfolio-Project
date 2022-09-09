@@ -280,12 +280,12 @@ describe("/api/articles", () => {
         .expect(404);
       expect(body.msg).toEqual("article id 20 not found");
     });
-  });
-  it("400: returns an error when invalid article_id is given", async () => {
-    const { body } = await request(app)
-      .get("/api/articles/one/comments")
-      .expect(400);
-    expect(body.msg).toEqual("bad request");
+    it("400: returns an error when invalid article_id is given", async () => {
+      const { body } = await request(app)
+        .get("/api/articles/one/comments")
+        .expect(400);
+      expect(body.msg).toEqual("bad request");
+    });
   });
   describe("POST /api/articles/:article_id/comments", () => {
     it("201: reponds with the posted comment and the correct keys", async () => {
@@ -439,55 +439,6 @@ describe("/api/comments/:comment_id", () => {
       .delete("/api/comments/invalid")
       .expect(400);
     expect(body.msg).toBe("bad request");
-  });
-  describe("PATCH", () => {
-    it("200: updates votes by number indicated in recieved object", async () => {
-      const testVotes = { inc_votes: -6 };
-      const { body } = await request(app)
-        .patch("/api/comments/1")
-        .send(testVotes)
-        .expect(200);
-      expect(body.comment).toEqual({
-        comment_id: 1,
-        body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-        votes: 10,
-        author: "butter_bridge",
-        article_id: 9,
-        created_at: "2020-04-06T12:17:00.000Z",
-      });
-    });
-    it("400: wrong key entered", async () => {
-      const testVotes = { wrong_key: -50 };
-      const { body } = await request(app)
-        .patch("/api/comments/1")
-        .send(testVotes)
-        .expect(400);
-      expect(body.msg).toBe("bad request");
-    });
-    it("400: wrong data type for votes", async () => {
-      const testVotes = { inc_votes: "fifty" };
-      const { body } = await request(app)
-        .patch("/api/comments/1")
-        .send(testVotes)
-        .expect(400);
-      expect(body.msg).toBe("bad request");
-    });
-    it("404: comment_id not found", async () => {
-      const testVotes = { inc_votes: 50 };
-      const { body } = await request(app)
-        .patch("/api/comments/20")
-        .send(testVotes)
-        .expect(404);
-      expect(body.msg).toBe("not found");
-    });
-    it("wrong data type for article_id", async () => {
-      const testVotes = { inc_votes: 50 };
-      const { body } = await request(app)
-        .patch("/api/comments/ten")
-        .send(testVotes)
-        .expect(400);
-      expect(body.msg).toBe("bad request");
-    });
   });
 });
 

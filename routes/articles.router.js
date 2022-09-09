@@ -7,7 +7,7 @@ const {
 } = require("../controllers/nc-news.controllers");
 const articlesRouter = express.Router();
 
-articlesRouter.get("/", getArticles);
+articlesRouter.route("/").get(getArticles);
 
 articlesRouter.route("/:article_id").get(getArticles).patch(patchArticles);
 
