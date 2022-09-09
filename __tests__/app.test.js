@@ -77,6 +77,81 @@ describe("/api/articles", () => {
       expect(body.msg).toBe("coding not found");
     });
   });
+  describe("POST /api/articles", () => {
+    it("201: reponds with the posted article and the correct keys", async () => {
+      const testArticle = {
+        author: "butter_bridge",
+        title: "testing",
+        body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        topic: "paper",
+      };
+      const { body } = await request(app)
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(201);
+      expect(body.article).toEqual({
+        article_id: 13,
+        author: "butter_bridge",
+        title: "testing",
+        body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        topic: "paper",
+        votes: 0,
+        comment_count: 0,
+        created_at: expect.any(String),
+      });
+    });
+    it("400: wrong data type entered", async () => {
+      const testArticle = {
+        author: "butter_bridge",
+        title: 123,
+        body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        topic: "paper",
+      };
+      const { body } = await request(app)
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+    it("400: empty data field", async () => {
+      const testArticle = {
+        author: "butter_bridge",
+        title: "test",
+        body: "",
+        topic: "paper",
+      };
+      const { body } = await request(app)
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+    it("400: incorrect username", async () => {
+      const testArticle = {
+        author: "invalid",
+        title: "test",
+        body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        topic: "paper",
+      };
+      const { body } = await request(app)
+        .post("/api/articles/1/comments")
+        .send(testArticle)
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+    it("400: missing required field/key", async () => {
+      const testArticle = {
+        author: "butter_bridge",
+        title: "test",
+        body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      };
+      const { body } = await request(app)
+        .post("/api/articles/20/comments")
+        .send(testArticle)
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+  });
   describe("GET /api/articles sort_by(queries)", () => {
     it("200: returns all articles sorted by valid column defaults to descending", async () => {
       const { body } = await request(app)
@@ -433,12 +508,61 @@ describe("/api/comments/:comment_id", () => {
         .expect(404);
       expect(body.msg).toBe("not found");
     });
+    it("400: article_id is invalid", async () => {
+      const { body } = await request(app)
+        .delete("/api/comments/invalid")
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
   });
-  it("400: article_id is invalid", async () => {
-    const { body } = await request(app)
-      .delete("/api/comments/invalid")
-      .expect(400);
-    expect(body.msg).toBe("bad request");
+  describe("PATCH", () => {
+    it("200: updates votes by number indicated in recieved object", async () => {
+      const testVotes = { inc_votes: -6 };
+      const { body } = await request(app)
+        .patch("/api/comments/1")
+        .send(testVotes)
+        .expect(200);
+      expect(body.comment).toEqual({
+        comment_id: 1,
+        body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        votes: 10,
+        author: "butter_bridge",
+        article_id: 9,
+        created_at: "2020-04-06T12:17:00.000Z",
+      });
+    });
+    it("400: wrong key entered", async () => {
+      const testVotes = { wrong_key: -50 };
+      const { body } = await request(app)
+        .patch("/api/comments/1")
+        .send(testVotes)
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+    it("400: wrong data type for votes", async () => {
+      const testVotes = { inc_votes: "fifty" };
+      const { body } = await request(app)
+        .patch("/api/comments/1")
+        .send(testVotes)
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+    it("404: comment_id not found", async () => {
+      const testVotes = { inc_votes: 50 };
+      const { body } = await request(app)
+        .patch("/api/comments/20")
+        .send(testVotes)
+        .expect(404);
+      expect(body.msg).toBe("not found");
+    });
+    it("wrong data type for article_id", async () => {
+      const testVotes = { inc_votes: 50 };
+      const { body } = await request(app)
+        .patch("/api/comments/ten")
+        .send(testVotes)
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
   });
 });
 

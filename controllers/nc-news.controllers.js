@@ -9,6 +9,7 @@ const {
   removeCommentById,
   fetchUserByUsername,
   updateCommentsById,
+  addArticle,
 } = require("../models/nc-news.models");
 
 exports.getTopics = async (req, res, next) => {
@@ -115,6 +116,16 @@ exports.patchCommentsById = async (req, res, next) => {
     const commmentId = req.params.comment_id;
     const comment = await updateCommentsById(commmentId, newVotes);
     res.status(200).send({ comment });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.postArticles = async (req, res, next) => {
+  try {
+    const { author, title, body, topic } = req.body;
+    const article = await addArticle(author, title, body, topic);
+    res.status(201).send({ article });
   } catch (err) {
     next(err);
   }
