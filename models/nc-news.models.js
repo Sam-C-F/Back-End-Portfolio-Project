@@ -138,8 +138,12 @@ exports.updateArticles = async (articleId, newVotes) => {
   return updateArticleData.rows[0];
 };
 
-exports.fetchCommentsOnArticle = async (articleId) => {
-  if (onlyPositiveIntegers(articleId)) {
+exports.fetchCommentsOnArticle = async (articleId, limit = 10, p = 1) => {
+  if (
+    onlyPositiveIntegers(articleId) ||
+    onlyPositiveIntegers(limit) ||
+    onlyPositiveIntegers(p)
+  ) {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
   const activeArticleIds = await db.query(
@@ -157,11 +161,19 @@ exports.fetchCommentsOnArticle = async (articleId) => {
       msg: `article id ${articleId} not found`,
     });
   }
+  const { rowCount } = await db.query(
+    `SELECT * FROM comments WHERE article_id = $1`,
+    [articleId]
+  );
+
+  calculatePage(p, limit, rowCount);
 
   const activeComments = await db.query(
     `
   SELECT * FROM comments 
-  WHERE article_id = $1;
+  WHERE article_id = $1
+  ORDER BY comment_id ASC
+  LIMIT ${limit} OFFSET ${page};
   `,
     [articleId]
   );

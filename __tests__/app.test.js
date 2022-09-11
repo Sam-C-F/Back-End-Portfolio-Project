@@ -196,7 +196,7 @@ describe("/api/articles", () => {
         .expect(400);
       expect(body.msg).toBe("bad request");
     });
-    it("400: query inputs are sanitised to only allow certain queries to be made)", async () => {
+    it("400: query inputs are sanitised to only allow certain queries to be made", async () => {
       const { body } = await request(app)
         .get("/api/articles?sort_by=title&order_by=ASC;DROP TABLE users")
         .expect(400);
@@ -402,7 +402,7 @@ describe("/api/articles", () => {
       const { body } = await request(app)
         .get("/api/articles/1/comments")
         .expect(200);
-      expect(body.comments.length).toBe(11);
+      expect(body.comments.length).toBe(10);
       body.comments.forEach((comment) => {
         expect(comment).toEqual(
           expect.objectContaining({
@@ -433,6 +433,71 @@ describe("/api/articles", () => {
         .get("/api/articles/one/comments")
         .expect(400);
       expect(body.msg).toEqual("bad request");
+    });
+    it("200: accepts a limit query which limits the number of comments", async () => {
+      const { body } = await request(app)
+        .get("/api/articles/1/comments?limit=5")
+        .expect(200);
+      expect(body.comments.length).toBe(5);
+      body.comments.forEach((comment) => {
+        expect(comment).toEqual(
+          expect.objectContaining({
+            body: expect.any(String),
+            votes: expect.any(Number),
+            author: expect.any(String),
+            article_id: expect.any(Number),
+            created_at: expect.any(String),
+          })
+        );
+      });
+    });
+    it("200: limit defaults the number of responses to 10", async () => {
+      const { body } = await request(app)
+        .get("/api/articles/1/comments")
+        .expect(200);
+      expect(body.comments.length).toBe(10);
+    });
+    it("400: limit allows only numbers", async () => {
+      const { body } = await request(app)
+        .get("/api/articles/1/comments?limit=five")
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+    it("400: limit allows only numbers numbers larger than 1", async () => {
+      const { body } = await request(app)
+        .get("/api/articles/1/comments?limit=-1")
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+    it("200: allows a 'p' query which specifies the page to start at based on the limit (test 1)", async () => {
+      const { body } = await request(app)
+        .get("/api/articles/1/comments?limit=3&p=3")
+        .expect(200);
+      expect(body.comments[0].comment_id).toBe(13);
+    });
+    it("200: allows a 'p' query which specifies the page to start at based on the limit (test 2)", async () => {
+      const { body } = await request(app)
+        .get("/api/articles/1/comments?limit=5&p=2")
+        .expect(200);
+      expect(body.comments[0].comment_id).toBe(7);
+    });
+    it("200: returns all articles if limit is more than total number of articles, removing p value", async () => {
+      const { body } = await request(app)
+        .get("/api/articles/1/comments?limit=50&p=3")
+        .expect(200);
+      expect(body.comments.length).toBe(11);
+    });
+    it("400: p does not allow anything other than numbers", async () => {
+      const { body } = await request(app)
+        .get("/api/articles/1/comments?limit=5&p=two")
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+    it("400: p does only allows numbers more than 1", async () => {
+      const { body } = await request(app)
+        .get("/api/articles/1/comments?limit=5&p=-1")
+        .expect(400);
+      expect(body.msg).toBe("bad request");
     });
   });
   describe("POST /api/articles/:article_id/comments", () => {
