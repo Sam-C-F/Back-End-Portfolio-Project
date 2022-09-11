@@ -32,7 +32,9 @@ describe("/api/topics", () => {
 describe("/api/articles", () => {
   describe("GET", () => {
     it("200: responds with an array of all articles properties including the correct author and comment_count", async () => {
-      const { body } = await request(app).get("/api/articles").expect(200);
+      const { body } = await request(app)
+        .get("/api/articles?limit=12")
+        .expect(200);
       expect(body.articles.length).toBe(12);
       body.articles.forEach((article) => {
         expect(article).toEqual(
@@ -57,12 +59,10 @@ describe("/api/articles", () => {
     });
     it("200: responds with specified topic when query is input", async () => {
       const { body } = await request(app)
-        .get("/api/articles?topic=mitch")
+        .get("/api/articles?topic=cats")
         .expect(200);
-      expect(body.articles.length === 11).toBe(true);
-      body.articles.forEach((article) => {
-        expect(article.topic).toBe("mitch");
-      });
+      expect([body.articles].length === 1).toBe(true);
+      expect(body.articles.topic).toBe("cats");
     });
     it("200: topic exists but has no articles", async () => {
       const { body } = await request(app)
@@ -75,6 +75,132 @@ describe("/api/articles", () => {
         .get("/api/articles?topic=coding")
         .expect(404);
       expect(body.msg).toBe("coding not found");
+    });
+  });
+  describe("GET /api/articles pagination (limit, page and rowCount)", () => {
+    it("200: accepts a limit query which limits the number of responses", async () => {
+      const { body } = await request(app)
+        .get("/api/articles?limit=5")
+        .expect(200);
+      expect(body.articles.length).toBe(5);
+      body.articles.forEach((article) => {
+        expect(article).toEqual(
+          expect.objectContaining({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(Number),
+          })
+        );
+      });
+    });
+    it("200: limit defaults the number of responses to 10", async () => {
+      const { body } = await request(app).get("/api/articles").expect(200);
+      expect(body.articles.length).toBe(10);
+    });
+    it("400: limit allows only numbers", async () => {
+      const { body } = await request(app)
+        .get("/api/articles?limit=five")
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+    it("400: limit allows only numbers numbers larger than 1", async () => {
+      const { body } = await request(app)
+        .get("/api/articles?limit=-1")
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+    it("200: returns a total_count property of all available articles", async () => {
+      const { body } = await request(app)
+        .get("/api/articles?limit=2")
+        .expect(200);
+      expect(body.total_count).toBe(12);
+    });
+    it("200: allows a 'p' query which specifies the page to start at based on the limit (test 1)", async () => {
+      const { body } = await request(app)
+        .get("/api/articles?sort_by=article_id&order_by=ASC&limit=10&p=2")
+        .expect(200);
+      expect(body.articles[0].article_id).toBe(11);
+    });
+    it("200: allows a 'p' query which specifies the page to start at based on the limit (test 2)", async () => {
+      const { body } = await request(app)
+        .get("/api/articles?sort_by=article_id&order_by=ASC&limit=2&p=5")
+        .expect(200);
+      expect(body.articles[0].article_id).toBe(11);
+    });
+    it("200: returns all articles if limit is more than total number of articles, removing p value", async () => {
+      const { body } = await request(app)
+        .get("/api/articles?limit=20&p=3")
+        .expect(200);
+      expect(body.articles.length).toBe(12);
+    });
+    it("400: p does not allow anything other than numbers", async () => {
+      const { body } = await request(app)
+        .get("/api/articles?limit=5&p=two")
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+    it("400: p does only allows numbers more than 1", async () => {
+      const { body } = await request(app)
+        .get("/api/articles?limit=5&p=-1")
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+  });
+  describe("GET /api/articles sort_by(queries)", () => {
+    it("200: returns all articles sorted by valid column defaults to descending", async () => {
+      const { body } = await request(app)
+        .get("/api/articles?sort_by=title")
+        .expect(200);
+      expect(body.articles).toBeSorted({
+        key: "title",
+        descending: true,
+      });
+    });
+    it("200: returns all articles sorted by valid column and allows order to be changed to ascending", async () => {
+      const { body } = await request(app)
+        .get("/api/articles?sort_by=title&order_by=ASC")
+        .expect(200);
+      expect(body.articles).toBeSorted({
+        key: "title",
+        ascending: true,
+      });
+    });
+    it("200: returns all articles sorted by valid column and allows order to be changed to ascending", async () => {
+      const { body } = await request(app)
+        .get("/api/articles?sort_by=title&order_by=ASC")
+        .expect(200);
+      expect(body.articles).toBeSorted({
+        key: "title",
+        ascending: true,
+      });
+    });
+    it("400: cannot search by invalid column name", async () => {
+      const { body } = await request(app)
+        .get("/api/articles?sort_by=invalid")
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+    it("400: cannot search by invalid order type", async () => {
+      const { body } = await request(app)
+        .get("/api/articles?sort_by=title&order_by=invalid")
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+    it("400: sends 400 error if any data added after legitimate queries (error codes added to badRequestErrors in app)", async () => {
+      const { body } = await request(app)
+        .get("/api/articles?sort_by=title&order_by=ASC;DROP TABLE users")
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+    it("400: query inputs are sanitised to only allow certain queries to be made)", async () => {
+      const { body } = await request(app)
+        .get("/api/articles?sort_by=title&order_by=ASC;DROP TABLE users")
+        .expect(400);
+      expect(body.msg).toBe("bad request");
     });
   });
   describe("POST /api/articles", () => {
@@ -148,59 +274,6 @@ describe("/api/articles", () => {
       const { body } = await request(app)
         .post("/api/articles/20/comments")
         .send(testArticle)
-        .expect(400);
-      expect(body.msg).toBe("bad request");
-    });
-  });
-  describe("GET /api/articles sort_by(queries)", () => {
-    it("200: returns all articles sorted by valid column defaults to descending", async () => {
-      const { body } = await request(app)
-        .get("/api/articles?sort_by=title")
-        .expect(200);
-      expect(body.articles).toBeSorted({
-        key: "title",
-        descending: true,
-      });
-    });
-    it("200: returns all articles sorted by valid column and allows order to be changed to ascending", async () => {
-      const { body } = await request(app)
-        .get("/api/articles?sort_by=title&order_by=ASC")
-        .expect(200);
-      expect(body.articles).toBeSorted({
-        key: "title",
-        ascending: true,
-      });
-    });
-    it("200: returns all articles sorted by valid column and allows order to be changed to ascending", async () => {
-      const { body } = await request(app)
-        .get("/api/articles?sort_by=title&order_by=ASC")
-        .expect(200);
-      expect(body.articles).toBeSorted({
-        key: "title",
-        ascending: true,
-      });
-    });
-    it("400: cannot search by invalid column name", async () => {
-      const { body } = await request(app)
-        .get("/api/articles?sort_by=invalid")
-        .expect(400);
-      expect(body.msg).toBe("bad request");
-    });
-    it("400: cannot search by invalid order type", async () => {
-      const { body } = await request(app)
-        .get("/api/articles?sort_by=title&order_by=invalid")
-        .expect(400);
-      expect(body.msg).toBe("bad request");
-    });
-    it("400: sends 400 error if any data added after legitimate queries (error codes added to badRequestErrors in app)", async () => {
-      const { body } = await request(app)
-        .get("/api/articles?sort_by=title&order_by=ASC;DROP TABLE users")
-        .expect(400);
-      expect(body.msg).toBe("bad request");
-    });
-    it("400: query inputs are sanitised to only allow certain queries to be made)", async () => {
-      const { body } = await request(app)
-        .get("/api/articles?sort_by=title&order_by=ASC;DROP TABLE users")
         .expect(400);
       expect(body.msg).toBe("bad request");
     });

@@ -23,23 +23,17 @@ exports.getTopics = async (req, res, next) => {
 
 exports.getArticles = async (req, res, next) => {
   try {
-    const topicQuery = req.query.topic;
     const articleId = req.params.article_id;
-    let sortBy = req.query.sort_by;
-    if (sortBy) {
-      sortBy = sortBy.toLowerCase();
-    }
-    let orderBy = req.query.order_by;
-    if (orderBy) {
-      orderBy = orderBy.toUpperCase();
-    }
-    const articles = await fetchArticles(
+    let { sort_by, order_by, topic, limit, p } = req.query;
+    const { rows, rowCount } = await fetchArticles(
       articleId,
-      topicQuery,
-      sortBy,
-      orderBy
+      topic,
+      p,
+      sort_by,
+      order_by,
+      limit
     );
-    res.status(200).send({ articles });
+    res.status(200).send({ articles: rows, total_count: rowCount });
   } catch (err) {
     next(err);
   }
