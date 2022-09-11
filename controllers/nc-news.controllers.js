@@ -62,7 +62,8 @@ exports.patchArticles = async (req, res, next) => {
 exports.getCommentsOnArticle = async (req, res, next) => {
   try {
     const articleId = req.params.article_id;
-    const comments = await fetchCommentsOnArticle(articleId);
+    const { limit, p } = req.query;
+    const comments = await fetchCommentsOnArticle(articleId, limit, p);
     res.status(200).send({ comments });
   } catch (err) {
     next(err);
