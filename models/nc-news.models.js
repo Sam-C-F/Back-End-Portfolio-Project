@@ -14,10 +14,19 @@ exports.fetchTopics = async () => {
 exports.fetchArticles = async (
   articleId,
   topicQuery,
+  p = 1,
   sortBy = "created_at",
-  orderBy = "DESC"
+  orderBy = "DESC",
+  limit = 10
 ) => {
+  if (/\D/g.test(limit) || limit < 1) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+  if (/\D/g.test([p]) || p < 1) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
   const validColumns = [
+    "article_id",
     "topic",
     "articles",
     "votes",
@@ -25,6 +34,8 @@ exports.fetchArticles = async (
     "created_at",
     "title",
   ];
+  sortBy.toLowerCase();
+  orderBy.toUpperCase();
   const validOrder = ["ASC", "DESC"];
   if (!validColumns.includes(sortBy)) {
     return Promise.reject({ status: 400, msg: "bad request" });
@@ -67,19 +78,30 @@ exports.fetchArticles = async (
     queryValues.push(topicQuery);
   }
 
+  const { rowCount } = await db.query(`SELECT * FROM articles`);
+
+  if (+p === 1 || +limit > rowCount) {
+    page = 0;
+  } else if (+p === 2) {
+    page = +limit;
+  } else if (+p > 2) {
+    page = +limit * +p;
+  }
+
   queryStr += ` GROUP BY articles.article_id 
-      ORDER BY ${sortBy} ${orderBy};`;
+      ORDER BY ${sortBy} ${orderBy}
+      LIMIT ${limit} OFFSET ${page}`;
 
-  const fullQuery = await db.query(queryStr, queryValues);
+  const { rows } = await db.query(queryStr, queryValues);
 
-  if (fullQuery.rows.length === 0 && !topicQuery) {
+  if (rows.length === 0 && !topicQuery) {
     return Promise.reject({ status: 404, msg: "not found" });
-  } else if (fullQuery.rows.length === 0 && topicQuery) {
-    return fullQuery.rows;
-  } else if (fullQuery.rows.length === 1) {
-    return fullQuery.rows[0];
+  } else if (rows.length === 0 && topicQuery) {
+    return { rows, rowCount };
+  } else if (rows.length === 1 && limit === 10) {
+    return { rows: rows[0], rowCount };
   } else {
-    return fullQuery.rows;
+    return { rows, rowCount };
   }
 };
 
