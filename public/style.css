@@ -4,3 +4,19 @@ ul li {
     display: block;
     margin: 0.8rem auto;
 }
+
+a:hover {
+    text-decoration: underline;
+    font-size: large;
+    color: white;
+    background: blue;
+    font-weight: bold;
+}
+
+a {
+    color: blue;
+    background: white;
+    text-decoration: none;
+    font-size:large;
+}
+
