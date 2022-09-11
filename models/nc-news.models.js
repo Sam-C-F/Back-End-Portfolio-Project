@@ -1,5 +1,10 @@
 const db = require("../db/connection");
-const { textCheck, bodyCheck } = require("../db/seeds/utils");
+const {
+  textCheck,
+  bodyCheck,
+  onlyPositiveIntegers,
+  calculatePage,
+} = require("./utility-funcs.models");
 const endpoints = require("../endpoints.json");
 
 exports.fetchTopics = async () => {
@@ -19,12 +24,10 @@ exports.fetchArticles = async (
   orderBy = "DESC",
   limit = 10
 ) => {
-  if (/\D/g.test(limit) || limit < 1) {
+  if (onlyPositiveIntegers(p) || onlyPositiveIntegers(limit)) {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
-  if (/\D/g.test([p]) || p < 1) {
-    return Promise.reject({ status: 400, msg: "bad request" });
-  }
+
   const validColumns = [
     "article_id",
     "topic",
@@ -80,13 +83,7 @@ exports.fetchArticles = async (
 
   const { rowCount } = await db.query(`SELECT * FROM articles`);
 
-  if (+p === 1 || +limit > rowCount) {
-    page = 0;
-  } else if (+p === 2) {
-    page = +limit;
-  } else if (+p > 2) {
-    page = +limit * +p;
-  }
+  calculatePage(p, limit, rowCount);
 
   queryStr += ` GROUP BY articles.article_id 
       ORDER BY ${sortBy} ${orderBy}
@@ -142,7 +139,7 @@ exports.updateArticles = async (articleId, newVotes) => {
 };
 
 exports.fetchCommentsOnArticle = async (articleId) => {
-  if (articleId.match(/\D/g) || articleId < 1) {
+  if (onlyPositiveIntegers(articleId)) {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
   const activeArticleIds = await db.query(
@@ -172,7 +169,7 @@ exports.fetchCommentsOnArticle = async (articleId) => {
 };
 
 exports.addCommentsOnArticle = async (article_id, username, body) => {
-  if (article_id.match(/\D/g) || article_id < 1) {
+  if (onlyPositiveIntegers(article_id)) {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
   if (body === undefined || username === undefined) {
@@ -213,7 +210,7 @@ exports.addCommentsOnArticle = async (article_id, username, body) => {
 };
 
 exports.removeCommentById = async (commentId) => {
-  if (commentId.match(/\D/g) || commentId < 1) {
+  if (onlyPositiveIntegers(commentId)) {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
   const activeArticleIds = await db.query(
@@ -240,7 +237,7 @@ exports.fetchApi = () => {
 };
 
 exports.fetchUserByUsername = async (username) => {
-  if (username.match(/[^a-zA-Z_]/g)) {
+  if (textCheck(username)) {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
   const userData = await db.query(

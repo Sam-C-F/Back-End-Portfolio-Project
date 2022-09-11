@@ -20,11 +20,3 @@ exports.formatComments = (comments, idLookup) => {
     };
   });
 };
-
-exports.textCheck = (textOnlyField) => {
-  return /[^a-zA-Z_]/g.test(textOnlyField);
-};
-
-exports.bodyCheck = (textOnlyField) => {
-  return /[^a-zA-Z_\s\,\.\!\"\;\?\@\£\&]/g.test(textOnlyField);
-};
