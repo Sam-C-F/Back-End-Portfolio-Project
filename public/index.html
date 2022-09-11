@@ -12,14 +12,35 @@
         Pathways for API
     </h1>
     <ul>
-        <li><a href = "https://back-end-portfolio-project.herokuapp.com/api">/api</a><br>See /api for a more detailed breakdown.</li>
-        <li><a href = "https://back-end-portfolio-project.herokuapp.com/api/topics">/api/topics</a><br>A list of all topics.</li>
-        <li><a href = "https://back-end-portfolio-project.herokuapp.com/api/articles">/api/articles/</a><br>A list of all articles. Also allows a POST for a new article. There are a number of queries that can be made, see /api for a full breakdown</li>
-        <li><a href="https://back-end-portfolio-project.herokuapp.com/api/users">/api/users</a><br>A list of all users</li>
-        <li><a href = "https://back-end-portfolio-project.herokuapp.com/api/articles">/api/articles/:article_id</a><br>Search for an article by article ID. Also allows a PATCH to update the number of votes associated with an article. You will need to manually add the number in place of the ':article_id'.</li>
-        <li><a href = https://back-end-portfolio-project.herokuapp.com/api/articles/:article_id/comments>/api/articles/:article_id/comments</a><br>This endpoint allows two types of request, GET and POST, either search for all comments on an article by article ID, or post a new comment to a specific article. It allows 2 queries limit and p, see /api for a full breakdown. You will need to manually add the number in place of the ':article_id'.</li>
-        <li><a href="https://back-end-portfolio-project.herokuapp.com/api/comments/:comment_id">/api/comments/:comment_id</a><br>This endpoint allows a DELETE request and removes the comment associated with the given comment_id.  Also allows a PATCH to update the number of votes associated with a comment</li>
-        <li><a href="https://back-end-portfolio-project.herokuapp.com/api/users/:username"">/api/users/username</a><br>Search for a user by their username. You will need to manually add the username in place of the ':username'</li>
+        <li><a href = "https://back-end-portfolio-project.herokuapp.com/api">/api</a><br>
+            <li>See /api for a more detailed breakdown of all available endpoints, including acceptable queries, example requests and example responses.</li>
+        </li>
+        <li><a href = "https://back-end-portfolio-project.herokuapp.com/api/topics">/api/topics</a><br>
+            <li>Shows a list of all topics (or 'slugs') and includes a description.</li>
+        </li>
+        <li><a href = "https://back-end-portfolio-project.herokuapp.com/api/articles">/api/articles/</a><br>
+            <li>Shows a list of all articles. Allows a POST request which will add a new article to the database. There are a number of queries that can be made to this URL:
+               <ul> <li>topic: searches for all articles with the specified topic.</li>
+                <li>sort_by: sorts the data, alphabetically or numerically, by title, topic, author, comment_count, article_id and, by default, created_at.</li>
+                <li>order: either ASC (ascending) or, by default, DESC (descending) (not case sensitive).</li>
+                <li>limit: limits the number of items on a page, by default this is 10.</li>
+                <li>p: selects which page to view if there are more articles than the selected limit.</li> </ul>
+            </li>
+        </li>
+        <li><a href="https://back-end-portfolio-project.herokuapp.com/api/users">/api/users</a><br>
+            <li>Shows a list of all users including name, username and the avatar_URL.</li>
+        </li>
+        <li><a href = "https://back-end-portfolio-project.herokuapp.com/api/articles">/api/articles/:article_id</a><br>
+            <li>Search for an article by article ID. Also allows a PATCH to update the number of votes associated with an article. You will need to manually add the number in place of the ':article_id'.</li>
+        </li>
+        <li><a href = https://back-end-portfolio-project.herokuapp.com/api/articles/:article_id/comments>/api/articles/:article_id/comments</a><br>
+            <li>This endpoint allows two types of request, GET and POST, either search for all comments on an article by article ID, or post a new comment to a specific article. It allows 2 queries 'limit' and 'p' which limit the number of comments shown and changes the page being viewed. You will need to manually add the number in place of the ':article_id'.</li>
+        </li>
+        <li><a href="https://back-end-portfolio-project.herokuapp.com/api/comments/:comment_id">/api/comments/:comment_id</a><br>
+            <li>This endpoint allows a DELETE request and removes the comment associated with the given comment_id.  Also allows a PATCH to update the number of votes associated with a comment</li>
+        </li>
+        <li><a href="https://back-end-portfolio-project.herokuapp.com/api/users/:username"">/api/users/username</a><br><li>Search for a user by their username. You will need to manually add the username in place of the ':username'</li>
+    </li>
     </ul>
 </body>
 </html>

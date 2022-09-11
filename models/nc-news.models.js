@@ -31,11 +31,11 @@ exports.fetchArticles = async (
   const validColumns = [
     "article_id",
     "topic",
-    "articles",
     "votes",
     "comment_count",
     "created_at",
     "title",
+    "author",
   ];
   sortBy.toLowerCase();
   orderBy.toUpperCase();
