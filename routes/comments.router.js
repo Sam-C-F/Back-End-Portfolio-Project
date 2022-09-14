@@ -2,7 +2,7 @@ const express = require("express");
 const {
   patchCommentsById,
   deleteCommentById,
-} = require("../controllers/nc-news.controllers");
+} = require("../controllers/comments.controllers");
 const commentsRouter = express.Router();
 
 commentsRouter.delete("/:comment_id", deleteCommentById);
