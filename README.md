@@ -47,7 +47,7 @@ and include the following in the file:
 
 ## Testing
 
-As **TDD** has been used throughout the development process there is a full testing suite which can be found in the \***\*tests\*\*** directory.
+As **TDD** has been used throughout the development process there is a full testing suite which can be found in the **tests** directory.
 
 Tests can be run using either:
 
