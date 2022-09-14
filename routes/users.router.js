@@ -2,7 +2,7 @@ const express = require("express");
 const {
   getUsers,
   getUserByUsername,
-} = require("../controllers/nc-news.controllers");
+} = require("../controllers/users.controller");
 const usersRouter = express.Router();
 
 usersRouter.get("/", getUsers);

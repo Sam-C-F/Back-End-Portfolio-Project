@@ -5,7 +5,7 @@ const {
   getCommentsOnArticle,
   postCommentsOnArticle,
   postArticles,
-} = require("../controllers/nc-news.controllers");
+} = require("../controllers/articles.controllers");
 const articlesRouter = express.Router();
 
 articlesRouter.route("/").get(getArticles).post(postArticles);
