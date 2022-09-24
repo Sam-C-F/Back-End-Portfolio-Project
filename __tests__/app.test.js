@@ -446,6 +446,30 @@ describe("/api/articles", () => {
       expect(body.msg).toBe("bad request");
     });
   });
+  describe("DELETE /api/articles/:article_id", () => {
+    it("204: deletes the article with the given id", async () => {
+      await request(app).delete("/api/articles/1").expect(204);
+      const { rows } = await db.query(
+        `SELECT * FROM articles WHERE article_id = 1`
+      );
+      const allArticleIds = rows.map((row) => {
+        return row.article_id;
+      });
+      expect(allArticleIds).toEqual([]);
+    });
+    it("404: comment does not exist", async () => {
+      const { body } = await request(app)
+        .delete("/api/articles/30")
+        .expect(404);
+      expect(body.msg).toBe("not found");
+    });
+    it("400: article_id is invalid", async () => {
+      const { body } = await request(app)
+        .delete("/api/articles/invalid")
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+  });
   describe("GET /api/articles/:article_id/comments", () => {
     it("returns an array of comments for the given article_id", async () => {
       const { body } = await request(app)

@@ -101,6 +101,11 @@
       ]
     }
   },
+  "DELETE /api/articles/:article_id": {
+    "description": "removes an article",
+    "queries": [],
+    "exampleResponse": {}
+  },
   "GET /api/articles/:article_id/comments": {
     "description": "serves all comments on given article",
     "queries": [],
