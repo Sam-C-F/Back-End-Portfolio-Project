@@ -30,8 +30,8 @@
         <li><a href="https://back-end-portfolio-project.herokuapp.com/api/users">/api/users</a><br>
             <li>Shows a list of all users including name, username and the avatar_URL.</li>
         </li>
-        <li><a href = "https://back-end-portfolio-project.herokuapp.com/api/articles">/api/articles/:article_id</a><br>
-            <li>Search for an article by article ID. Also allows a PATCH to update the number of votes associated with an article. You will need to manually add the number in place of the ':article_id'.</li>
+        <li><a href = "https://back-end-portfolio-project.herokuapp.com/api/articles/:article_id">/api/articles/:article_id</a><br>
+            <li>Search for an article by article ID. Also allows a PATCH to update the number of votes associated with an article. Also allows a DELETE request to the article, this will also delete all associated comments. You will need to manually add the number in place of the ':article_id'.</li>
         </li>
         <li><a href = https://back-end-portfolio-project.herokuapp.com/api/articles/:article_id/comments>/api/articles/:article_id/comments</a><br>
             <li>This endpoint allows two types of request, GET and POST, either search for all comments on an article by article ID, or post a new comment to a specific article. It allows 2 queries 'limit' and 'p' which limit the number of comments shown and changes the page being viewed. You will need to manually add the number in place of the ':article_id'.</li>
