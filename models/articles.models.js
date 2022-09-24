@@ -231,3 +231,31 @@ exports.addCommentsOnArticle = async (article_id, username, body) => {
   );
   return postComment.rows[0];
 };
+
+exports.removeArticleById = async (articleId) => {
+  if (onlyPositiveIntegers(articleId)) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+  const activeArticleIds = await db.query(
+    `SELECT * FROM articles WHERE article_id = $1`,
+    [articleId]
+  );
+  if (!activeArticleIds.rows[0]) {
+    return Promise.reject({ status: 404, msg: "not found" });
+  }
+  const deleteComments = await db.query(
+    `
+  DELETE FROM comments
+  WHERE article_id = $1;
+  `,
+    [articleId]
+  );
+  const deleteArticle = await db.query(
+    `
+  DELETE FROM articles
+  WHERE article_id = $1;
+  `,
+    [articleId]
+  );
+  return deleteComments, deleteArticle;
+};
