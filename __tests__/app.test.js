@@ -27,6 +27,55 @@ describe("/api/topics", () => {
       });
     });
   });
+  describe("POST /api/topics", () => {
+    it("201: reponds with the posted topic and the correct keys", async () => {
+      const testTopic = {
+        description: "testing",
+        slug: "A test topic",
+      };
+      const { body } = await request(app)
+        .post("/api/topics")
+        .send(testTopic)
+        .expect(201);
+      expect(body.topic).toEqual({
+        description: "testing",
+        slug: "A test topic",
+      });
+    });
+    it("400: wrong data type entered", async () => {
+      const testTopic = {
+        description: 400,
+        slug: "A test topic",
+      };
+      const { body } = await request(app)
+        .post("/api/topics")
+        .send(testTopic)
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+    it("400: empty data field", async () => {
+      const testTopic = {
+        description: "testing",
+        slug: "",
+      };
+      const { body } = await request(app)
+        .post("/api/topics")
+        .send(testTopic)
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+    it("400: missing required field/key", async () => {
+      const testTopic = {
+        description: "",
+        slug: "A test topic",
+      };
+      const { body } = await request(app)
+        .post("/api/topics")
+        .send(testTopic)
+        .expect(400);
+      expect(body.msg).toBe("bad request");
+    });
+  });
 });
 
 describe("/api/articles", () => {

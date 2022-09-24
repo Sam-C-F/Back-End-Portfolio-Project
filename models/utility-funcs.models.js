@@ -1,5 +1,5 @@
 exports.textCheck = (textOnlyField) => {
-  return /[^a-zA-Z_]/g.test(textOnlyField);
+  return /[^a-zA-Z_ ]/g.test(textOnlyField);
 };
 
 exports.bodyCheck = (textOnlyField) => {
