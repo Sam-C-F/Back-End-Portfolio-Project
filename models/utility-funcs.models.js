@@ -11,11 +11,12 @@ exports.onlyPositiveIntegers = (param) => {
 };
 
 exports.calculatePage = (p, limit, rowCount) => {
+  console.log(rowCount);
   if (+p === 1 || +limit > rowCount) {
     page = 0;
   } else if (+p === 2) {
     page = +limit;
   } else if (+p > 2) {
-    page = +limit * +p;
+    page = +limit * (+p - 1);
   }
 };

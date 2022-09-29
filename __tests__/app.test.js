@@ -178,7 +178,7 @@ describe("/api/articles", () => {
       const { body } = await request(app)
         .get("/api/articles?sort_by=article_id&order_by=ASC&limit=2&p=5")
         .expect(200);
-      expect(body.articles[0].article_id).toBe(11);
+      expect(body.articles[0].article_id).toBe(9);
     });
     it("200: returns all articles if limit is more than total number of articles, removing p value", async () => {
       const { body } = await request(app)
@@ -546,7 +546,7 @@ describe("/api/articles", () => {
       const { body } = await request(app)
         .get("/api/articles/1/comments?limit=3&p=3")
         .expect(200);
-      expect(body.comments[0].comment_id).toBe(4);
+      expect(body.comments[0].comment_id).toBe(6);
     });
     it("200: allows a 'p' query which specifies the page to start at based on the limit (test 2)", async () => {
       const { body } = await request(app)
