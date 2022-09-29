@@ -184,7 +184,7 @@ exports.fetchCommentsOnArticle = async (articleId, limit = 10, p = 1) => {
     `
     SELECT * FROM comments 
     WHERE article_id = $1
-    ORDER BY comment_id ASC
+    ORDER BY created_at ASC
     LIMIT ${limit} OFFSET ${page};
     `,
     [articleId]
