@@ -119,14 +119,7 @@ exports.updateArticles = async (articleId, newVotes) => {
 };
 
 exports.addArticle = async (author, title, body, topic) => {
-  if (
-    !author ||
-    !title ||
-    !body ||
-    textCheck(author) ||
-    textCheck(title) ||
-    bodyCheck(body)
-  ) {
+  if (!author || !title || !body || textCheck(title) || bodyCheck(body)) {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
   const timeStamp = new Date(Date.now());
